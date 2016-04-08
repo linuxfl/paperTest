@@ -27,7 +27,7 @@ def admmLR(A,b,rho,alpha,localcomm,mastercomm,comm,rank,size,connectTOPO):
 	tolList = []
 	matA = mat(A);matb = mat(b).T
 	n = shape(matA)[1]
-	solution = mat(np.loadtxt("data/solution.dat")).T
+	solution = mat(np.loadtxt("../data/solution.dat")).T
 	meanxold = zeros((n,1),dtype = np.float)
 	meanxtmp = zeros((n,1),dtype = np.float)
 	meanxtmp1 = zeros((n,1),dtype = np.float)
@@ -93,7 +93,7 @@ def admmLR(A,b,rho,alpha,localcomm,mastercomm,comm,rank,size,connectTOPO):
 			break
 		if rank == 0:
 			logLine = "itercount:%d primal %.15f objectionfuction --- >%0.15f"%(itercount,alltol,objectfuction(matA,meanx/size,matb))
-			#print logLine
+			print logLine
         itercount = itercount + 1
         commuTimeSum += commuTime1 - commuTime0
     return x,commuTimeSum,tolList
@@ -128,7 +128,6 @@ if __name__ == "__main__":
 	Adir = "../data/A%d.dat"%(rank%20);bdir = "../data/b%d.dat"%(rank%20)
 	A = np.loadtxt(Adir);b = np.loadtxt(bdir)
 	if rank == 0:
-		fp = open("./testresult/hdtime.dat",'a')
 		time0 = time.time()
 	#connect 8 11.67
 	#cycle 8 14.2
@@ -136,12 +135,4 @@ if __name__ == "__main__":
 	x,ct,tolList = admmLR(A,b,float(sys.argv[2]),1.0,localcomm,mastercomm,comm,rank,localsize,connectTOPO)
 	if rank == 0:
 		time1 = time.time()
-		string = "./testresult/HDADMM_%dx%d_%d.dat"%(shape(A)[0],shape(A)[1],connectTOPO)
-		timestr = str(shape(A)[0])+"X"+str(shape(A)[1]) + " "*5 + str(len(tolList)) + " "*5 + str(connectTOPO) +" "*5 +\
-			str(time1 - time0)+ " "*5 + str(ct)+ " "*5 +str(ct/len(tolList))+ "\n"
-		string = "./testresult/ADMM_%dx%d.dat"%(shape(A)[0],shape(A)[1])
-		fp.write(timestr)
-		fp.close()
-		np.savetxt(string,mat(tolList).T)
-		#print "RMSE:%.15f"%testErr(mat(A),mat(b).T,x)
 		print "itercout",len(tolList),"rank %d"%rank," Elapsed time is","%4.3f"%(time1 - time0),"seconds","Communication time is %4.9f"%ct,"seconds","average Communication Time is %4.9f"%(ct/len(tolList))

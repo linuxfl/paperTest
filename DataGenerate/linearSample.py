@@ -11,10 +11,10 @@ def generateData(sampleNumber,paraNumber):
 	
 	s = np.random.uniform(-1.9061842247,1.14401391414,paraOfNumber)
 	s = mat(s).T
-	np.savetxt("../LR_Consensus/data/solution.dat",s)
+	np.savetxt("../data/solution.dat",s)
 
 	for i in range(BLOCK_SIZE):
-		Astr = "../LR_Consensus/data/A%d.dat"%i;bstr = "../LR_Consensus/data/b%d.dat"%i
+		Astr = "../data/A%d.dat"%i;bstr = "../data/b%d.dat"%i
 		a = np.random.uniform(-0.375111355247,0.322563975491,paraOfNumber * sampleOfNumber)
 		a = a.reshape((sampleOfNumber,paraOfNumber))
 		np.savetxt(Astr,a)

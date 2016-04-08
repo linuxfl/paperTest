@@ -21,7 +21,7 @@ def admmLR(A,b,rho,localcomm,mastercomm,comm,rank,size):
 	
 	matA = mat(A);matb = mat(b).T
 	n = shape(matA)[1]
-	solution = mat(np.loadtxt("data/solution.dat")).T
+	solution = mat(np.loadtxt("../data/solution.dat")).T
 	meanxold = zeros((n,1),dtype = np.float)
 	meanxtmp = zeros((n,1),dtype = np.float)
 	meanxtmp1 = zeros((n,1),dtype = np.float)
@@ -73,7 +73,7 @@ def admmLR(A,b,rho,localcomm,mastercomm,comm,rank,size):
 			break
 		if rank == 0:
 			logLine = "itercount:%d primal %.15f objectionfuction --- >%0.15f"%(itercount,alltol,objectfuction(matA,meanx/size,matb))
-			#print logLine
+			print logLine
 			itercount = itercount + 1
 		commuTimeSum += commuTime1 - commuTime0
 	return x,commuTimeSum

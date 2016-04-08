@@ -15,9 +15,7 @@ if __name__ == "__main__":
 		
 	for node in nodelist:
 		codeCpyCmd = "scp admmLRConsensus.py %s@%s:/home/%s/paperTest/primal/"%(USER,node,USER)
-		#os.system(codeCpyCmd1)
-		print codeCpyCmd
+		os.system(codeCpyCmd1)
 
 	codeRunCmd = "mpirun -f hostfile -np %d python admmLRConsensus.py %f"%(int(sys.argv[1]),float(sys.argv[2]))
-	#os.system(codeRunCmd)
-	print codeRunCmd
+	os.system(codeRunCmd)

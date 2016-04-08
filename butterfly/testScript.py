@@ -17,10 +17,8 @@ if __name__ == "__main__":
 	for node in nodelist:
 		codeCpyCmd1 = "scp admmLRConsensus_butterfly.py %s@%s:/home/%s/paperTest/butterfly/"%(USER,node,USER)
 		codeCpyCmd2 = "scp mpiNode.py %s@%s:/home/%s/paperTest/butterfly/"%(USER,node,USER)
-		#os.system(codeCpyCmd1)
-		#os.system(codeCpyCmd2)
-		print codeCpyCmd1
+		os.system(codeCpyCmd1)
+		os.system(codeCpyCmd2)
 
 	codeRunCmd = "mpirun -f hostfile -np %d python admmLRConsensus_butterfly.py %f"%(int(sys.argv[1]),float(sys.argv[2]))
-	#os.system(codeRunCmd)
-	print codeRunCmd
+	os.system(codeRunCmd)
