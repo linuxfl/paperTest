@@ -37,7 +37,7 @@ def admmLR(A,b,rho,alpha,localcomm,mastercomm,comm,rank,size,connectTOPO):
 	lemon = (matA.T * matA + 2 * size * rho * eye((n))).I
 	
 	Atb = matA.T * matb
-	itercout = 0
+	itercount = 0
 	commuTimeSum = 0.0
 	while itercount < iterMax:
 		#update x:
@@ -46,7 +46,6 @@ def admmLR(A,b,rho,alpha,localcomm,mastercomm,comm,rank,size,connectTOPO):
 		localcomm.Allreduce(x,meanxold,op = MPI.SUM)
 		meanxold = meanxold - x
 		if mastercomm != None:
-			print "rank:",rank
 			#local all connect topo
 			if connectTOPO == ALLCONNECT:
 				mastercomm.Allreduce((meanxold+x),meanxtmp,op = MPI.SUM)
@@ -94,9 +93,9 @@ def admmLR(A,b,rho,alpha,localcomm,mastercomm,comm,rank,size,connectTOPO):
 		if rank == 0:
 			logLine = "itercount:%d primal %.15f objectionfuction --- >%0.15f"%(itercount,alltol,objectfuction(matA,meanx/size,matb))
 			print logLine
-        itercount = itercount + 1
-        commuTimeSum += commuTime1 - commuTime0
-    return x,commuTimeSum,tolList
+		itercount = itercount + 1
+		commuTimeSum += commuTime1 - commuTime0
+	return x,commuTimeSum,tolList
 
 if __name__ == "__main__":
 	comm = MPI.COMM_WORLD
@@ -135,4 +134,4 @@ if __name__ == "__main__":
 	x,ct,tolList = admmLR(A,b,float(sys.argv[2]),1.0,localcomm,mastercomm,comm,rank,localsize,connectTOPO)
 	if rank == 0:
 		time1 = time.time()
-		print "itercout",len(tolList),"rank %d"%rank," Elapsed time is","%4.3f"%(time1 - time0),"seconds","Communication time is %4.9f"%ct,"seconds","average Communication Time is %4.9f"%(ct/len(tolList))
+		print "itercount",len(tolList),"rank %d"%rank," Elapsed time is","%4.3f"%(time1 - time0),"seconds","Communication time is %4.9f"%ct,"seconds","average Communication Time is %4.9f"%(ct/len(tolList))

@@ -31,27 +31,31 @@ def admmLR(A,b,rho,localcomm,mastercomm,comm,rank,size):
 	lemon = (matA.T * matA + 2 * size * rho * eye((n))).I
 	Atb = matA.T * matb
 	
-	itercout = 0
+	itercount = 0
 	commuTimeSum = 0.0
 	
 	if mastercomm != None:
-		numberofNodeLog = math.log(mastercomm.Get_size(),2)
-		print numberofNodeLog
+		numberofNodeLog = int(math.log(mastercomm.Get_size(),2))
 		curRank = mastercomm.Get_rank()
-		tempRank = curRank
-		
+
 	while itercount < iterMax:
 		#update x:
 		x = lemon * (Atb + rho * size * x +rho * meanx - y)
 		commuTime0 = time.time()
 		localcomm.Allreduce(x,meanxold,op = MPI.SUM)
 		meanxold = meanxold - x
+		
 		if mastercomm != None:
 			#butterfly algorithm
 			k = itercount%numberofNodeLog
+			if(k == 0):
+				tempRank = curRank
 			flag = tempRank & 1;
 			tempRank = tempRank >> 1
-			swapRank = (flag==0)?(curRank|(1<<k)):(curRank&(~(1<<k)))
+			if flag == 0:
+				swapRank = curRank | 1<<(k)
+			else:
+				swapRank = curRank & (~(1<<(k)))
 			mastercomm.Sendrecv(meanxold + x,swapRank,0,meanxtmp,swapRank,0)
 			meanxold = meanxold + meanxtmp
 			
@@ -74,9 +78,9 @@ def admmLR(A,b,rho,localcomm,mastercomm,comm,rank,size):
 		if rank == 0:
 			logLine = "itercount:%d primal %.15f objectionfuction --- >%0.15f"%(itercount,alltol,objectfuction(matA,meanx/size,matb))
 			print logLine
-			itercount = itercount + 1
+		itercount = itercount + 1
 		commuTimeSum += commuTime1 - commuTime0
-	return x,commuTimeSum
+	return x,commuTimeSum,itercount
 
 if __name__ == "__main__":
 	comm = MPI.COMM_WORLD
@@ -98,12 +102,14 @@ if __name__ == "__main__":
 		mastercomm = None
 	Adir = "../data/A%d.dat"%(rank%20);bdir = "../data/b%d.dat"%(rank%20)
 	A = np.loadtxt(Adir);b = np.loadtxt(bdir)
-	if rank == 0:
-		time0 = time.time()
+	time0 = time.time()
 	#connect 8 11.67
 	#cycle 8 14.2
 	#butterfly 8 18.5
-	x,ct = admmLR(A,b,float(sys.argv[1]),localcomm,mastercomm,comm,rank,localsize)
+	x,ct,it = admmLR(A,b,float(sys.argv[1]),localcomm,mastercomm,comm,rank,localsize)
+	time1 = time.time()
 	if rank == 0:
-		time1 = time.time()
-		print "rank %d"%rank," Elapsed time is","%4.3f"%(time1 - time0),"seconds","Communication time is %4.9f"%ct,"seconds")
+		print "itercount:",it,"rank %d"%rank," Elapsed time is","%4.3f"%(time1 - time0),"seconds",\
+		"Communication time is %4.9f"%ct,"seconds","average Communication time %4.9f"%(ct/it)
+	
+	
