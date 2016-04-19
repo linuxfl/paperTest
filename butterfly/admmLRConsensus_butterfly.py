@@ -42,8 +42,9 @@ def admmLR(A,b,rho,localcomm,mastercomm,comm,rank,size):
 		#update x:
 		x = lemon * (Atb + rho * size * x +rho * meanx - y)
 		commuTime0 = time.time()
-		localcomm.Allreduce(x,meanxold,op = MPI.SUM)
-		meanxold = meanxold - x
+		#localcomm.Allreduce(x,meanxold,op = MPI.SUM)
+		#meanxold = meanxold - x
+		localcomm.Reduce(x,meanxold,op=MPI.SUM,root=0)
 		
 		if mastercomm != None:
 			#butterfly algorithm
@@ -56,9 +57,11 @@ def admmLR(A,b,rho,localcomm,mastercomm,comm,rank,size):
 				swapRank = curRank | 1<<(k)
 			else:
 				swapRank = curRank & (~(1<<(k)))
-			mastercomm.Sendrecv(meanxold + x,swapRank,0,meanxtmp,swapRank,0)
+			mastercomm.Sendrecv(meanxold,swapRank,0,meanxtmp,swapRank,0)
 			meanxold = meanxold + meanxtmp
 			
+		meanxold = localcomm.bcast(meanxold,root = 0)
+		meanxold = meanxold - x
 		#update meanx:
 		commuTime1 = time.time()
 		meanx = meanxold/1.0
@@ -72,12 +75,12 @@ def admmLR(A,b,rho,localcomm,mastercomm,comm,rank,size):
 		tol = np.linalg.norm(x - solution)/np.linalg.norm(solution)
 		alltol = zeros((1,1))
 		comm.Allreduce(tol,alltol,MPI.MIN)
-		
+		0
 		if alltol < ABSTOL:
 			break
 		if rank == 0:
 			logLine = "itercount:%d primal %.15f objectionfuction --- >%0.15f"%(itercount,alltol,objectfuction(matA,meanx/size,matb))
-			print logLine
+			#print logLine
 		itercount = itercount + 1
 		commuTimeSum += commuTime1 - commuTime0
 	return x,commuTimeSum,itercount
@@ -94,11 +97,8 @@ if __name__ == "__main__":
 	mastercomm = mpiNode.MPIN_get_master_comm(comm,rank)
 	nodeid = mpiNode.MPIN_get_node_by_rank(rank)
 	masterRank = mpiNode.MPIN_get_master_rank(nodeid)
-	if rank == masterRank:
-		#butterfly network topo
-		localsize = 2 * localcomm.Get_size() -1
-	else:
-		localsize = localcomm.Get_size()-1
+	localsize = 2 * localcomm.Get_size() -1
+	if rank != masterRank:
 		mastercomm = None
 	Adir = "../data/A%d.dat"%(rank%20);bdir = "../data/b%d.dat"%(rank%20)
 	A = np.loadtxt(Adir);b = np.loadtxt(bdir)

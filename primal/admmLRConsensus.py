@@ -52,7 +52,7 @@ def admmLR(A,b,rho,alpha,comm,rank,size):
         comm.Allreduce(tol,alltol,op = MPI.MIN)
         if rank == 0:
 			logLine =  "itercout:%d primal %.15f objectionfuction --- >%.15f"%(itercount,alltol,objectfuction(matA,meanx/size,matb))
-			print logLine
+		#	print logLine
         if alltol < ABSTOL:
 			break
         itercount = itercount + 1

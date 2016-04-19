@@ -8,7 +8,7 @@ if __name__ == "__main__":
 	
 	hostname = socket.gethostname()
 	nodelist = []
-	fp = open("../butterfly/hostfile")
+	fp = open("../primal/hostfile")
 	for node in fp.readlines():
 		node = node.split(":")
 		nodelist.append(node[0])
