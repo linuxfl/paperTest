@@ -1,3 +1,6 @@
 data/*
 *.pyc
 C/data/*
+butterfly/hostfile
+othernetwork/hostfile
+primal/hostfile
