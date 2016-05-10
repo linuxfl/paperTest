@@ -2,7 +2,7 @@ import os
 import sys
 import socket
 
-USER = "fangling"
+USER = "root"
 rho = 1
 
 if __name__ == "__main__":
@@ -20,8 +20,8 @@ if __name__ == "__main__":
 		
 	for node in nodelist:
 		if node != hostname:
-			codeCpyCmd1 = "scp admmLRConsensus_butterfly.py %s@%s:/home/%s/paperTest/butterfly/"%(USER,node,USER)
-			codeCpyCmd2 = "scp mpiNode.py %s@%s:/home/%s/paperTest/butterfly/"%(USER,node,USER)
+			codeCpyCmd1 = "scp admmLRConsensus_butterfly.py %s@%s:/%s/paperTest/butterfly/"%(USER,node,USER)
+			codeCpyCmd2 = "scp mpiNode.py %s@%s:/%s/paperTest/butterfly/"%(USER,node,USER)
 			os.system(codeCpyCmd1)
 			os.system(codeCpyCmd2)
 

@@ -2,7 +2,7 @@ import os
 import sys
 import socket
 
-USER = "fangling"
+USER = "root"
 numberofprocessor = 16
 
 if __name__ == "__main__":
@@ -20,13 +20,13 @@ if __name__ == "__main__":
 		
 	for node in nodelist:
 		if node != hostname:
-			codeCpyCmd1 = "scp admmLRConsensus_butterfly.py %s@%s:/home/%s/paperTest/butterfly/"%(USER,node,USER)
-			codeCpyCmd2 = "scp mpiNode.py %s@%s:/home/%s/paperTest/butterfly/"%(USER,node,USER)
+			codeCpyCmd1 = "scp admmLRConsensus_butterfly.py %s@%s:/%s/paperTest/butterfly/"%(USER,node,USER)
+			codeCpyCmd2 = "scp mpiNode.py %s@%s:/%s/paperTest/butterfly/"%(USER,node,USER)
 			os.system(codeCpyCmd1)
 			os.system(codeCpyCmd2)
 
-	for j in range(2,5):
+	for j in range(1,2):
 		for i in range(1,11):
-			print "rho = ",float(i*0.1+j)
-			codeRunCmd = "mpirun -f hostfile -np %d python admmLRConsensus_butterfly.py %f"%(numberofprocessor,float(i*0.1+j))
+			print "rho = ",float(i*0.01+j*0.1)
+			codeRunCmd = "mpirun -f hostfile -np %d python admmLRConsensus_butterfly.py %f"%(numberofprocessor,float(i*0.01+j*0.1))
 			os.system(codeRunCmd)

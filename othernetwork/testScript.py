@@ -1,8 +1,8 @@
 import os
 import sys
 import socket
-USER = "fangling"
-network = 1
+USER = "root"
+network = 0
 
 if __name__ == "__main__":
 	if len(sys.argv) < 3:
@@ -17,8 +17,8 @@ if __name__ == "__main__":
 		
 	for node in nodelist:
 		if node != hostname:
-			codeCpyCmd1 = "scp admmLRConsensus_other.py %s@%s:/home/%s/paperTest/othernetwork/"%(USER,node,USER)
-			codeCpyCmd2 = "scp mpiNode.py %s@%s:/home/%s/paperTest/othernetwork/"%(USER,node,USER)
+			codeCpyCmd1 = "scp admmLRConsensus_other.py %s@%s:/%s/paperTest/othernetwork/"%(USER,node,USER)
+			codeCpyCmd2 = "scp mpiNode.py %s@%s:/%s/paperTest/othernetwork/"%(USER,node,USER)
 			os.system(codeCpyCmd1)
 			os.system(codeCpyCmd2)
 
