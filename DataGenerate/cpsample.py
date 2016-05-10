@@ -2,7 +2,7 @@ import os
 import sys
 import socket
 
-USER = "fangling"
+USER = "root"
 
 if __name__ == "__main__":
 	
@@ -16,5 +16,5 @@ if __name__ == "__main__":
 	for node in nodelist:
 		if node != hostname:
 			print "copy data to %s"%(node)
-			codeCpyCmd = "scp ../data/* %s@%s:/home/%s/paperTest/data"%(USER,node,USER)
+			codeCpyCmd = "scp ../data/* %s@%s:/%s/paperTest/data"%(USER,node,USER)
 			os.system(codeCpyCmd)
